@@ -1,0 +1,128 @@
+<!--
+@license
+    The MIT License (MIT)
+
+    Copyright (c) 2015 Dipartimento di Informatica - Universit� di Salerno - Italy
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
+-->
+
+<!--
+* Developed by :
+* ROUTE-TO-PA Project - grant No 645860. - www.routetopa.eu
+*
+-->
+
+<link rel="import" href="../base-ajax-json-alasql-datalet/base-ajax-json-alasql-datalet.html">
+
+<!--
+The `odc-d3-datalet` uses the base-ajax-json-jsonpath-datalet as data retriving and selection mechanism. It defines the common properties
+for all the odc-d3 datalets
+
+Example :
+
+    <dom-module id="odc-d3-chart-datalet">
+        <template>
+            ...
+            <odc-d3-datalet id="charts" data-url="{{dataUrl}}" fields="{{fields}}"></odc-d3-datalet>
+            ...
+        </template>
+    </dom-module>
+
+@element odc-d3-datalet
+@status v0.1
+@homepage
+@group datalets
+-->
+
+<dom-module id="odc-d3-datalet">
+
+    <template>
+        <div id="container" style="width:auto; height:auto;"></div>
+        <base-ajax-json-alasql-datalet data-url="{{dataUrl}}" fields="{{fields}}" data="{{data}}" title="{{title}}" description="{{description}}" export_menu="{{export_menu}}"></base-ajax-json-alasql-datalet>
+    </template>
+    <link rel="stylesheet" type="text/css" href="static/css/odc-d3.min.css">
+    <script src="../shared_js/d3v4.min.js"></script>
+    <script src="static/js/odc-d3.min.js"></script>
+
+    <script>
+        var OdcD3Behavior = {
+
+            properties: {
+                data: {
+                    type: Array,
+                    value: []
+                },
+                groupKey: {
+                    type: String,
+                    value: null
+                }
+            },
+
+            transformData: function () {
+                var self = this;
+                if(this.data.length == 0)
+                    return;
+
+                var selectedFields = JSON.parse(this._component.getAttribute("selectedfields"));
+
+                var inputs = [];
+                if(selectedFields) { /*if deprecated*/
+                    for (var i=0; i < selectedFields.length; i++)
+                        if (selectedFields[i]){
+                            var item = selectedFields[i].field;
+                            inputs.push(item);
+                            if(item==="Categories"){
+                                this.properties.groupKey = selectedFields[i].value;
+                            }
+                        }
+
+                }
+
+                var cat_index = inputs.indexOf("Categories");
+                var data = [];
+
+                for (var i = 0; i < this.data[0]["data"].length; i++) {
+                    var d ={};
+
+                    self.data.forEach(function(serie, serieIndex){
+                        d[serie.name] = self.data[serieIndex].data[i]
+                    });
+                    data.push(d);
+                }
+
+                this.properties.data = data;
+
+
+            },
+
+            redraw: function () {
+//                $(this._component.$.charts.$.container).highcharts().reflow();
+            }
+
+        };
+
+        var OdcD3ComponentBehavior = $.extend(true, {}, BaseDataletBehavior, WorkcycleBehavior, AjaxJsonAlasqlBehavior, OdcD3Behavior);
+
+        OdcD3Datalet = Polymer({
+            is : 'odc-d3-datalet'
+        });
+    </script>
+
+</dom-module>

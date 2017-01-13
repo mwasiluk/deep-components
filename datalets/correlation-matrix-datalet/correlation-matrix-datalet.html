@@ -1,0 +1,74 @@
+
+<link rel="import" href="../odc-d3-datalet/odc-d3-datalet.html">
+
+
+<dom-module id="correlation-matrix-datalet">
+    <template>
+        <style is="custom-style">
+            :host ::content #scatterplot-placeholder {
+                width: 100%;
+
+                background: #ffffff;
+                position: relative;
+            }
+        </style>
+        <odc-d3-datalet id="charts" data-url="{{dataUrl}}" fields="{{fields}}" title="{{title}}" description="{{description}}" export_menu="{{export_menu}}" data="{{data}}"></odc-d3-datalet>
+    </template>
+    <script>
+
+        var CorrelationMatrixBehavior = {
+            presentData: function () {
+
+                var self =this;
+                var conf = {
+                    tooltip: true,
+                    cell:{
+
+                    }
+                };
+
+
+//                console.log(this.properties.data)
+
+                var plot = new ODCD3.CorrelationMatrix(this._component.$.charts.$.container, this.properties.data, conf);
+            }
+        };
+
+        CorrelationMatrixDatalet = Polymer({
+            is: 'correlation-matrix-datalet',
+            properties: {
+                data: {
+                    type: Array,
+                    value: undefined
+                },
+                behavior : {
+                    type : Object,
+                    value : {}
+                },
+                /**
+                 * Control the export menu
+                 * xxxx BITMASK. FROM RIGHT : HTML, PNG, RTF, MY SPACE (eg. 1111 show all, 0000 hide all)
+                 *
+                 * @attribute export_menu
+                 * @type Number
+                 * @default 15
+                 */
+                export_menu : {
+                    type  : Number,
+                    value : 15 // xxxx BITMASK. FROM RIGHT : HTML, PNG, RTF, MY SPACE (eg. 1111 show all, 0000 hide all)
+                }
+            },
+
+            /**
+             * 'ready' callback extend the scatterchartComponentBehavior with HighchartsComponentBehavior and scatterchartBehavior
+             * and run the Datalet workcycle.
+             *
+             * @method ready
+             */
+            ready: function(){
+                this.behavior = $.extend(true, {}, OdcD3ComponentBehavior, CorrelationMatrixBehavior);
+                this.async(function(){this.behavior.init(this)},0);
+            }
+        });
+    </script>
+</dom-module>

@@ -72,6 +72,10 @@ Example :
                 groupKey: {
                     type: String,
                     value: null
+                },
+                selectedFields: {
+                    type: Array,
+                    value: []
                 }
             },
 
@@ -84,6 +88,7 @@ Example :
 
                 var inputs = [];
                 if(selectedFields) { /*if deprecated*/
+                    this.properties.selectedFields=selectedFields;
                     for (var i=0; i < selectedFields.length; i++)
                         if (selectedFields[i]){
                             var item = selectedFields[i].field;

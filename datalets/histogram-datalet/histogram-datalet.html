@@ -2,48 +2,64 @@
 <link rel="import" href="../odc-d3-datalet/odc-d3-datalet.html">
 
 
-<dom-module id="scatterplot-matrix-datalet">
+<dom-module id="histogram-datalet">
     <template>
         <odc-d3-datalet id="charts" data-url="{{dataUrl}}" fields="{{fields}}" title="{{title}}" description="{{description}}" export_menu="{{export_menu}}" data="{{data}}"></odc-d3-datalet>
     </template>
     <script>
 
-        var ScatterplotMatrixBehavior = {
+        var HistogramBehavior = {
             presentData: function () {
 
                 var self =this;
                 var conf = {
-                    guides: true,
-                    brush: true,
+                    x:{
+                        key: this.properties.selectedFields[0].value,
+                        title: self._component.xAxisLabel,
+                        ticks: self._component.ticks
+                    },
+                    y:{
+                        title: self._component.yAxisLabel
+                    },
                     tooltip: true,
-                    margin:{
-                        left: 50
-                    }
+                    frequency: self._component.frequency
                 };
+                conf.groups=null;
                 if(this.properties.groupKey){
                     conf.groups= {
-                        key: this.properties.groupKey
+                        key: self.properties.groupKey
                     }
                 }
 
-                if(self._component.cellSize){
-                    conf.size=self._component.cellSize;
-                }
+//                console.log(conf, this.properties.data);
 
-                var plot = new ODCD3.ScatterPlotMatrix(this._component.$.charts.$.container, this.properties.data, conf);
+
+                var plot = new ODCD3.Histogram(this._component.$.charts.$.container, this.properties.data, conf);
             }
         };
 
-        ScatterplotMatrixDatalet = Polymer({
-            is: 'scatterplot-matrix-datalet',
+        HistogramDatalet = Polymer({
+            is: 'histogram-datalet',
             properties: {
                 data: {
                     type: Array,
                     value: undefined
                 },
-                cellSize: {
+                xAxisLabel: {
+                    type: String,
+                    value: ""
+                },
+                yAxisLabel: {
+                    type: String,
+                    value: ""
+                },
+                ticks: {
                     type: Number,
                     value: undefined
+                },
+                frequency: {
+                    type: Boolean,
+                    value: true
                 },
                 behavior : {
                     type : Object,
@@ -70,7 +86,7 @@
              * @method ready
              */
             ready: function(){
-                this.behavior = $.extend(true, {}, OdcD3ComponentBehavior, ScatterplotMatrixBehavior);
+                this.behavior = $.extend(true, {}, OdcD3ComponentBehavior, HistogramBehavior);
                 this.async(function(){this.behavior.init(this)},0);
             }
         });

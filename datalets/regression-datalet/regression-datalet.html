@@ -4,14 +4,6 @@
 
 <dom-module id="regression-datalet">
     <template>
-        <style is="custom-style">
-            :host ::content #scatterplot-placeholder {
-                width: 100%;
-
-                background: #ffffff;
-                position: relative;
-            }
-        </style>
         <odc-d3-datalet id="charts" data-url="{{dataUrl}}" fields="{{fields}}" title="{{title}}" description="{{description}}" export_menu="{{export_menu}}" data="{{data}}"></odc-d3-datalet>
     </template>
     <script>
